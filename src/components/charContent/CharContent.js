@@ -5,18 +5,18 @@ import CharInfo from "../charInfo/CharInfo";
 
 class CharContent extends Component {
 	state = {
-		selectedChar: null,
+		selectedCharID: null,
 	}
 
-	onSelectedChar = (id) => [
-		this.setState({selectedChar: id})
-	]
+	onSelectedChar = (id) => {
+		this.setState({selectedCharID: id})
+	}
 
 	render() {
 		return (
 			<div className="char__content">
 				<CharList onSelectedChar={this.onSelectedChar}/>
-				<CharInfo selectedChar={this.state.selectedChar}/>
+				<CharInfo selectedCharID={this.state.selectedCharID}/>
 			</div>
 		)
 	}
