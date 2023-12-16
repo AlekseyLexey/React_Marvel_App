@@ -7,9 +7,12 @@ import Spiner from '../spiner/Spiner';
 class CharList extends Component {
 
     state = {
-        list: null,
+        list: [],
         loaded: false,
-        error: false
+        error: false,
+        offset: 210,
+        charEnded: false,
+        newItemsLoading: false
     }
 
     marvelService = new MarvelService();
@@ -18,12 +21,26 @@ class CharList extends Component {
         this.marvelService.getAllCharacters().then(this.onListLoaded).catch(this.onError)
     }
 
-    onListLoaded = (list) => {
-        this.setState({list, loaded: true})
+    onListLoaded = (newList) => {
+
+        if (newList.length < 9) {
+            this.setState({ charEnded: true })
+        }
+
+        this.setState(({list, offset}) => ({
+            list: [...list, ...newList],
+            loaded: true,
+            offset: offset + 9,
+            newItemsLoading: false
+        }))
     }
 
     onError = () => {
         this.setState({loaded: true, error: true});
+    }
+
+    onListLoading = () => {
+        this.setState({newItemsLoading: true})
     }
 
     renderList = (list) => {
@@ -49,9 +66,14 @@ class CharList extends Component {
         // char__item_selected
     }
 
+    refreshingList = (offset) => {
+        this.onListLoading()
+        this.marvelService.getAllCharacters(offset).then(this.onListLoaded).catch(this.onError)
+    }
+
 
     render() {
-        const { list, loaded, error } = this.state;
+        const { list, loaded, error, offset, charEnded, newItemsLoading } = this.state;
 
         const items = this.renderList(list);
 
@@ -64,7 +86,11 @@ class CharList extends Component {
                 {errorItem}
                 {loadedItem}
                 {listItems}
-                <button className="button button__main button__long">
+                <button className="button button__main button__long"
+                    onClick={() => this.refreshingList(offset)}
+                    disabled={ newItemsLoading }
+                    style={{display: charEnded ? 'none' : 'block'}}
+                >
                     <div className="inner">load more</div>
                 </button>
             </div>

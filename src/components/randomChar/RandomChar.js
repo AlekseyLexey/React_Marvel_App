@@ -91,15 +91,15 @@ const View = ({char}) => {
 
     return (
         <div className="randomchar__block">
-            <img src={ thumbnail } alt="Random character" className="randomchar__img" style={{'objectFit': `${styleObjFit}`}}/>
+            <img src={thumbnail} alt="Random character" className="randomchar__img" style={{'objectFit': `${styleObjFit}`}}/>
             <div className="randomchar__info">
-                <p className="randomchar__name">{ name }</p>
+                <p className="randomchar__name">{name}</p>
                 <p className="randomchar__descr">{decription ? decription : 'No decription :('}</p>
                 <div className="randomchar__btns">
-                    <a href={ homepage } className="button button__main">
+                    <a href={homepage} className="button button__main">
                         <div className="inner">homepage</div>
                     </a>
-                    <a href={ wiki } className="button button__secondary">
+                    <a href={wiki} className="button button__secondary">
                         <div className="inner">Wiki</div>
                     </a>
                 </div>
