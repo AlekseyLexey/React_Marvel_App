@@ -1,12 +1,11 @@
 import './charList.scss';
-import { Component } from 'react';
+import React, { Component } from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorImg from '../error/Error';
 import Spiner from '../spiner/Spiner';
 import PropTypes from 'prop-types';
 
 class CharList extends Component {
-
     state = {
         list: [],
         loaded: false,
@@ -16,10 +15,22 @@ class CharList extends Component {
         newItemsLoading: false
     }
 
+    refList = [];
+
     marvelService = new MarvelService();
 
     componentDidMount() {
         this.marvelService.getAllCharacters().then(this.onListLoaded).catch(this.onError)
+    }
+
+    setRefList = elem => {
+        this.refList.push(elem)
+    }
+
+    onCharFocus = index => {
+        this.refList.forEach(item => item.className = 'char__item')
+        this.refList[index].className = 'char__item char__item_selected'
+        this.refList[index].focus()
     }
 
     onListLoaded = (newList) => {
@@ -49,9 +60,21 @@ class CharList extends Component {
             return
         }
 
-        const items = list.map(item => {
+        const items = list.map((item, index) => {
             return (
-                <li className="char__item" key={item.id} onClick={() => this.props.onSelectedChar(item.id)}>
+                <li className="char__item" ref={this.setRefList} key={item.id}
+                    tabIndex={0}
+                    onClick={() => {
+                        this.props.onSelectedChar(item.id)
+                        this.onCharFocus(index)
+                    }}
+                    onKeyUp={e => {
+                        if (e.key === 'Enter') {
+                            this.props.onSelectedChar(item.id)
+                            this.onCharFocus(index)
+                        }
+                    }}
+                >
                     <img src={item.thumbnail} alt={item.name}/>
                     <div className="char__name">{item.name}</div>
                 </li>
@@ -63,8 +86,6 @@ class CharList extends Component {
                 {items}
             </ul>
         )
-
-        // char__item_selected
     }
 
     refreshingList = (offset) => {
