@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/AlekseyLexey/React_Marvel_App.git/static/css/main.b378191d.chunk.css",
+    "main.js": "/AlekseyLexey/React_Marvel_App.git/static/js/main.0903449b.chunk.js",
+    "main.js.map": "/AlekseyLexey/React_Marvel_App.git/static/js/main.0903449b.chunk.js.map",
+    "runtime-main.js": "/AlekseyLexey/React_Marvel_App.git/static/js/runtime-main.f6844e8b.js",
+    "runtime-main.js.map": "/AlekseyLexey/React_Marvel_App.git/static/js/runtime-main.f6844e8b.js.map",
+    "static/js/2.a331fa0c.chunk.js": "/AlekseyLexey/React_Marvel_App.git/static/js/2.a331fa0c.chunk.js",
+    "static/js/2.a331fa0c.chunk.js.map": "/AlekseyLexey/React_Marvel_App.git/static/js/2.a331fa0c.chunk.js.map",
+    "index.html": "/AlekseyLexey/React_Marvel_App.git/index.html",
+    "static/css/main.b378191d.chunk.css.map": "/AlekseyLexey/React_Marvel_App.git/static/css/main.b378191d.chunk.css.map",
+    "static/js/2.a331fa0c.chunk.js.LICENSE.txt": "/AlekseyLexey/React_Marvel_App.git/static/js/2.a331fa0c.chunk.js.LICENSE.txt",
+    "static/media/error.42292aa1.gif": "/AlekseyLexey/React_Marvel_App.git/static/media/error.42292aa1.gif",
+    "static/media/mjolnir.61f31e18.png": "/AlekseyLexey/React_Marvel_App.git/static/media/mjolnir.61f31e18.png",
+    "static/media/vision.067d4ae1.png": "/AlekseyLexey/React_Marvel_App.git/static/media/vision.067d4ae1.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.f6844e8b.js",
+    "static/js/2.a331fa0c.chunk.js",
+    "static/css/main.b378191d.chunk.css",
+    "static/js/main.0903449b.chunk.js"
+  ]
+}
