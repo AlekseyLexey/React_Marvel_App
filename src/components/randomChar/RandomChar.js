@@ -1,88 +1,70 @@
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
 
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import MarvelService from '../../services/MarvelService';
 import Spiner from '../spiner/Spiner';
 import ErrorImg from '../error/Error';
 
-class RandomChar extends Component {
+const RandomChar = () => {
 
-    state = {
-        char: {
-            name: null,
-            decription: null,
-            thumbnail: null,
-            homepage: null,
-            wiki: null
-        },
-        loaded: false,
-        error: false
+    const [char, setChar] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        updateCharacter()
+    }, [])
+
+    const onCharLoaded = (char) => {
+        setChar(char);
+        setLoaded(true);
     }
 
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.updateCharacter()
+    const onCharLoading = () => {
+        setLoaded(false);
     }
 
-    componentDidUpdate() {
+    const onError = () => {
+        setLoaded(true);
+        setError(true);
     }
 
-    componentWillUnmount() {
-    }
-
-    onCharLoaded = (char) => {
-        return this.setState({char, loaded: true});
-    }
-
-    onCharLoading = () => {
-        return this.setState({loaded: false});
-    }
-
-    onError = () => {
-        this.setState({loaded: true, error: true});
-    }
-
-    updateCharacter = () => {
-        this.onCharLoading();
+    const updateCharacter = () => {
+        onCharLoading();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1010900);
 
-        this.marvelService.getCharacterData(id)
-            .then(this.onCharLoaded)
-            .catch(this.onError)
+        marvelService.getCharacterData(id)
+            .then(onCharLoaded)
+            .catch(onError)
     }
 
+    const errorItem = error ? <ErrorImg/> : null;
+    const loadedItem = !loaded ? <Spiner/> : null;
+    const content = !(error || !loaded) ? <View char={char}/> : null;
 
-    render() {
-        const {char, loaded, error} = this.state;
-
-        const errorItem = error ? <ErrorImg/> : null;
-        const loadedItem = !loaded ? <Spiner/> : null;
-        const content = !(error || !loaded) ? <View char={char}/> : null;
-
-
-        return (
-            <div className="randomchar">
-                {errorItem}
-                {loadedItem}
-                {content}
-                <div className="randomchar__static">
-                    <p className="randomchar__title">
-                        Random character for today!<br/>
-                        Do you want to get to know him better?
-                    </p>
-                    <p className="randomchar__title">
-                        Or choose another one
-                    </p>
-                    <button className="button button__main" onClick={this.updateCharacter}>
-                        <div className="inner">try it</div>
-                    </button>
-                    <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
-                </div>
+    return (
+        <div className="randomchar">
+            {errorItem}
+            {loadedItem}
+            {content}
+            <div className="randomchar__static">
+                <p className="randomchar__title">
+                    Random character for today!<br/>
+                    Do you want to get to know him better?
+                </p>
+                <p className="randomchar__title">
+                    Or choose another one
+                </p>
+                <button className="button button__main" onClick={updateCharacter}>
+                    <div className="inner">try it</div>
+                </button>
+                <img src={mjolnir} alt="mjolnir" className="randomchar__decoration"/>
             </div>
-        )
-    }
+        </div>
+    )
 }
 
 const View = ({char}) => {

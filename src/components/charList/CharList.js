@@ -1,77 +1,75 @@
 import './charList.scss';
-import React, { Component } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MarvelService from '../../services/MarvelService';
 import ErrorImg from '../error/Error';
 import Spiner from '../spiner/Spiner';
 import PropTypes from 'prop-types';
 
-class CharList extends Component {
-    state = {
-        list: [],
-        loaded: false,
-        error: false,
-        offset: 210,
-        charEnded: false,
-        newItemsLoading: false
+const CharList = (props) => {
+
+    const [list, setList] = useState([]);
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
+    const [offset, setOffset] = useState(210);
+    const [charEnded, setCharEnded] = useState(false);
+    const [newItemsLoading, setNewItemsLoading] = useState(false);
+
+    const refList = useRef([]);
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        marvelService.getAllCharacters().then(onListLoaded).catch(onError);
+    }, [])
+
+     const setRefList = (elem, i) => {
+        refList.current[i] = elem;
     }
 
-    refList = [];
-
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.marvelService.getAllCharacters().then(this.onListLoaded).catch(this.onError)
+     const onCharFocus = index => {
+        refList.current.forEach(item => item.className = 'char__item')
+        refList.current[index].className = 'char__item char__item_selected'
+        refList.current[index].focus()
     }
 
-    setRefList = elem => {
-        this.refList.push(elem)
-    }
-
-    onCharFocus = index => {
-        this.refList.forEach(item => item.className = 'char__item')
-        this.refList[index].className = 'char__item char__item_selected'
-        this.refList[index].focus()
-    }
-
-    onListLoaded = (newList) => {
+     const onListLoaded = (newList) => {
 
         if (newList.length < 9) {
-            this.setState({ charEnded: true })
+            setCharEnded(true)
         }
 
-        this.setState(({list, offset}) => ({
-            list: [...list, ...newList],
-            loaded: true,
-            offset: offset + 9,
-            newItemsLoading: false
-        }))
+        setList(list => [...list, ...newList]);
+        setLoaded(true);
+        setOffset(offset => offset + 9);
+        setNewItemsLoading(false)
     }
 
-    onError = () => {
-        this.setState({loaded: true, error: true});
+     const onError = () => {
+        setLoaded(true);
+        setError(true);
     }
 
-    onListLoading = () => {
-        this.setState({newItemsLoading: true})
+     const onListLoading = () => {
+        setNewItemsLoading(true);
     }
 
-    renderList = (list) => {
+     const renderList = (list) => {
         if (!list) {
             return
         }
 
         const items = list.map((item, index) => {
             return (
-                <li className="char__item" ref={this.setRefList} key={item.id}
+                <li className="char__item" ref={elem => setRefList(elem, index)} key={item.id}
                     tabIndex={0}
                     onClick={() => {
-                        this.props.onSelectedChar(item.id)
-                        this.onCharFocus(index)
+                        props.onSelectedChar(item.id)
+                        onCharFocus(index)
                     }}
                     onKeyUp={e => {
                         if (e.key === 'Enter') {
-                            this.props.onSelectedChar(item.id)
-                            this.onCharFocus(index)
+                            props.onSelectedChar(item.id)
+                            onCharFocus(index)
                         }
                     }}
                 >
@@ -88,36 +86,31 @@ class CharList extends Component {
         )
     }
 
-    refreshingList = (offset) => {
-        this.onListLoading()
-        this.marvelService.getAllCharacters(offset).then(this.onListLoaded).catch(this.onError)
+     const refreshingList = (offset) => {
+        onListLoading()
+        marvelService.getAllCharacters(offset).then(onListLoaded).catch(onError)
     }
 
+    const items = renderList(list);
 
-    render() {
-        const { list, loaded, error, offset, charEnded, newItemsLoading } = this.state;
+    const errorItem = error ? <ErrorImg/> : null;
+    const loadedItem = !loaded ? <Spiner/> : null;
+    const listItems = !(error || !loaded) ? items : null;
 
-        const items = this.renderList(list);
-
-        const errorItem = error ? <ErrorImg/> : null;
-        const loadedItem = !loaded ? <Spiner/> : null;
-        const listItems = !(error || !loaded) ? items : null;
-
-        return (
-            <div className="char__list">
-                {errorItem}
-                {loadedItem}
-                {listItems}
-                <button className="button button__main button__long"
-                    onClick={() => this.refreshingList(offset)}
-                    disabled={ newItemsLoading }
-                    style={{display: charEnded ? 'none' : 'block'}}
-                >
-                    <div className="inner">load more</div>
-                </button>
-            </div>
-        )
-    }
+    return (
+        <div className="char__list">
+            {errorItem}
+            {loadedItem}
+            {listItems}
+            <button className="button button__main button__long"
+                onClick={() => refreshingList(offset)}
+                disabled={ newItemsLoading }
+                style={{display: charEnded ? 'none' : 'block'}}
+            >
+                <div className="inner">load more</div>
+            </button>
+        </div>
+    )
 }
 
 

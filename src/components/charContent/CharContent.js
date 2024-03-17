@@ -1,25 +1,22 @@
-import { Component } from "react";
+import { useState } from "react";
 
 import CharList from "../charList/CharList";
 import CharInfo from "../charInfo/CharInfo";
 
-class CharContent extends Component {
-	state = {
-		selectedCharID: null,
+const CharContent = () => {
+
+	const [selectedCharID, setSelectedCharID] = useState(null);
+
+	const onSelectedChar = (id) => {
+		setSelectedCharID(id)
 	}
 
-	onSelectedChar = (id) => {
-		this.setState({selectedCharID: id})
-	}
-
-	render() {
-		return (
-			<div className="char__content">
-				<CharList onSelectedChar={this.onSelectedChar}/>
-				<CharInfo selectedCharID={this.state.selectedCharID}/>
-			</div>
-		)
-	}
+	return (
+		<div className="char__content">
+			<CharList onSelectedChar={onSelectedChar}/>
+			<CharInfo selectedCharID={selectedCharID}/>
+		</div>
+	)
 }
 
 export default CharContent;
