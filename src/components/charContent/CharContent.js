@@ -13,8 +13,8 @@ const CharContent = () => {
 
 	return (
 		<div className="char__content">
-			<CharList onSelectedChar={onSelectedChar}/>
-			<CharInfo selectedCharID={selectedCharID}/>
+			<CharList onSelectedChar={onSelectedChar} />
+			<CharInfo selectedCharID={selectedCharID} />
 		</div>
 	)
 }
