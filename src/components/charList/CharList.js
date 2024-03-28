@@ -1,6 +1,6 @@
 import './charList.scss';
 import { useState, useEffect, useRef } from 'react';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import ErrorImg from '../error/Error';
 import Spiner from '../spiner/Spiner';
 import PropTypes from 'prop-types';
@@ -8,52 +8,44 @@ import PropTypes from 'prop-types';
 const CharList = (props) => {
 
     const [list, setList] = useState([]);
-    const [loaded, setLoaded] = useState(false);
-    const [error, setError] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
     const [newItemsLoading, setNewItemsLoading] = useState(false);
 
     const refList = useRef([]);
 
-    const marvelService = new MarvelService();
+    const { error, loaded, getAllCharacters } = useMarvelService();
 
     useEffect(() => {
-        marvelService.getAllCharacters().then(onListLoaded).catch(onError);
+        getAllCharacters().then(onListLoaded);
     }, [])
 
-     const setRefList = (elem, i) => {
+    const setRefList = (elem, i) => {
         refList.current[i] = elem;
     }
 
-     const onCharFocus = index => {
+    const onCharFocus = index => {
         refList.current.forEach(item => item.className = 'char__item')
         refList.current[index].className = 'char__item char__item_selected'
         refList.current[index].focus()
     }
 
-     const onListLoaded = (newList) => {
+    const onListLoaded = (newList) => {
 
         if (newList.length < 9) {
             setCharEnded(true)
         }
 
         setList(list => [...list, ...newList]);
-        setLoaded(true);
         setOffset(offset => offset + 9);
         setNewItemsLoading(false)
     }
 
-     const onError = () => {
-        setLoaded(true);
-        setError(true);
-    }
-
-     const onListLoading = () => {
+    const onListLoading = () => {
         setNewItemsLoading(true);
     }
 
-     const renderList = (list) => {
+    const renderList = (list) => {
         if (!list) {
             return
         }
@@ -73,7 +65,7 @@ const CharList = (props) => {
                         }
                     }}
                 >
-                    <img src={item.thumbnail} alt={item.name}/>
+                    <img src={item.thumbnail} alt={item.name} />
                     <div className="char__name">{item.name}</div>
                 </li>
             )
@@ -86,26 +78,25 @@ const CharList = (props) => {
         )
     }
 
-     const refreshingList = (offset) => {
+    const refreshingList = (offset) => {
         onListLoading()
-        marvelService.getAllCharacters(offset).then(onListLoaded).catch(onError)
+        getAllCharacters(offset).then(onListLoaded)
     }
 
     const items = renderList(list);
 
-    const errorItem = error ? <ErrorImg/> : null;
-    const loadedItem = !loaded ? <Spiner/> : null;
-    const listItems = !(error || !loaded) ? items : null;
+    const errorItem = error ? <ErrorImg /> : null;
+    const loadedItem = !loaded ? <Spiner /> : null;
 
     return (
         <div className="char__list">
             {errorItem}
             {loadedItem}
-            {listItems}
+            {items}
             <button className="button button__main button__long"
                 onClick={() => refreshingList(offset)}
-                disabled={ newItemsLoading }
-                style={{display: charEnded ? 'none' : 'block'}}
+                disabled={newItemsLoading}
+                style={{ display: charEnded ? 'none' : 'block' }}
             >
                 <div className="inner">load more</div>
             </button>

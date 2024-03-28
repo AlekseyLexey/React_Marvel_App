@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { number } from 'prop-types';
 
 import './charInfo.scss';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Skeleton from '../skeleton/Skeleton';
 import ErrorImg from '../error/Error';
 import Spiner from '../spiner/Spiner';
@@ -11,10 +11,12 @@ import Spiner from '../spiner/Spiner';
 const CharInfo = (props) => {
 
     const [char, setChar] = useState(null);
-    const [loaded, setLoaded] = useState(true);
-    const [error, setError] = useState(false);
 
-    const marvelService = new MarvelService();
+    const { error, loaded, getCharacterData } = useMarvelService();
+
+    const scelet = useMemo(() => {
+        return props.selectedCharID ? 0 : 1
+    }, [props.selectedCharID])
 
     useEffect(() => {
         updateChar()
@@ -26,16 +28,6 @@ const CharInfo = (props) => {
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoaded(true);
-    }
-
-    const onCharLoading = () => {
-        setLoaded(false);
-    }
-
-    const onError = () => {
-        setLoaded(true);
-        setError(true);
     }
 
     const updateChar = () => {
@@ -44,28 +36,26 @@ const CharInfo = (props) => {
             return
         }
 
-        onCharLoading();
-        marvelService.getCharacterData(selectedCharID)
+        getCharacterData(selectedCharID)
             .then(onCharLoaded)
-            .catch(onError)
     }
 
-    const skeleton = char || !loaded || error ? null : <Skeleton/>
-    const errorItem = error ? <ErrorImg/> : null;
-    const loadedItem = !loaded ? <Spiner/> : null;
-    const content = !(error || !loaded || !char) ? <View char={ char }/> : null;
+    const skeleton = scelet ? <Skeleton /> : null
+    const errorItem = error ? <ErrorImg /> : null;
+    const loadedItem = (!scelet && !loaded) ? <Spiner /> : null;
+    const content = !(error || !loaded || !char) ? <View char={char} /> : null;
 
     return (
         <div className="char__info">
-            { skeleton }
-            { errorItem }
-            { loadedItem }
-            { content }
+            {skeleton}
+            {errorItem}
+            {loadedItem}
+            {content}
         </div>
     )
 }
 
-const View = ({char}) => {
+const View = ({ char }) => {
     const { name, decription, thumbnail, homepage, wiki, comics } = char;
     const styleObjFit = thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg' ? 'contain' : 'cover';
 
@@ -82,8 +72,8 @@ const View = ({char}) => {
             }
 
             content.push((
-                <li key={ i } className="char__comics-item">
-                    { comics[i].name }
+                <li key={i} className="char__comics-item">
+                    {comics[i].name}
                 </li>
             ))
         }
@@ -94,14 +84,14 @@ const View = ({char}) => {
     return (
         <>
             <div className="char__basics">
-                <img src={ thumbnail } alt={ name } style={{'objectFit': `${styleObjFit}`}}/>
+                <img src={thumbnail} alt={name} style={{ 'objectFit': `${styleObjFit}` }} />
                 <div>
-                    <div className="char__info-name">{ name }</div>
+                    <div className="char__info-name">{name}</div>
                     <div className="char__btns">
-                        <a href={ homepage } className="button button__main">
+                        <a href={homepage} className="button button__main">
                             <div className="inner">homepage</div>
                         </a>
-                        <a href={ wiki } className="button button__secondary">
+                        <a href={wiki} className="button button__secondary">
                             <div className="inner">Wiki</div>
                         </a>
                     </div>
@@ -112,7 +102,7 @@ const View = ({char}) => {
             </div>
             <div className="char__comics">Comics:</div>
             <ul className="char__comics-list">
-                { comicsContent }
+                {comicsContent}
             </ul>
         </>
     )
