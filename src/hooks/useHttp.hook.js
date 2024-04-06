@@ -5,6 +5,7 @@ export const useHttp = () => {
 	const [error, setError] = useState(null);
 
 	const request = useCallback(async (url) => {
+		setLoaded(false);
 		try {
 			const res = await fetch(url);
 

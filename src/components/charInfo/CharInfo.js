@@ -14,14 +14,6 @@ const CharInfo = (props) => {
 
     const { error, loaded, getCharacterData } = useMarvelService();
 
-    const scelet = useMemo(() => {
-        return props.selectedCharID ? 0 : 1
-    }, [props.selectedCharID])
-
-    useEffect(() => {
-        updateChar()
-    }, [])
-
     useEffect(() => {
         updateChar()
     }, [props.selectedCharID])
@@ -40,9 +32,9 @@ const CharInfo = (props) => {
             .then(onCharLoaded)
     }
 
-    const skeleton = scelet ? <Skeleton /> : null
+    const skeleton = char ? null : <Skeleton />
     const errorItem = error ? <ErrorImg /> : null;
-    const loadedItem = (!scelet && !loaded) ? <Spiner /> : null;
+    const loadedItem = (char && !loaded) ? <Spiner /> : null;
     const content = !(error || !loaded || !char) ? <View char={char} /> : null;
 
     return (

@@ -86,7 +86,7 @@ const CharList = (props) => {
     const items = renderList(list);
 
     const errorItem = error ? <ErrorImg /> : null;
-    const loadedItem = !loaded ? <Spiner /> : null;
+    const loadedItem = (!loaded && !list.length) ? <Spiner /> : null;
 
     return (
         <div className="char__list">
@@ -98,7 +98,7 @@ const CharList = (props) => {
                 disabled={newItemsLoading}
                 style={{ display: charEnded ? 'none' : 'block' }}
             >
-                <div className="inner">load more</div>
+                <div className="inner">{newItemsLoading ? 'loading...' : 'load more'}</div>
             </button>
         </div>
     )
