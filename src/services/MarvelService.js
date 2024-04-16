@@ -18,6 +18,11 @@ const useMarvelService = () => {
 		return _getCharacterData(res.data.results[0])
 	}
 
+	const getAllComics = async (offset = _baseOffset) => {
+		const res = await request(`${_PATH}comics?orderBy=issueNumber&limit=8&offset=${offset}&${_PUBLIC_API_KEY}`);
+		return res.data.results.map(_getComicsData);
+	}
+
 	const _getCharacterData = (res) => {
 		return {
 			name: res.name,
@@ -30,7 +35,16 @@ const useMarvelService = () => {
 		}
 	}
 
-	return { error, loaded, getAllCharacters, getCharacterData, clearError }
+	const _getComicsData = (res) => {
+		return {
+			id: res.id,
+			title: res.title,
+			thumbnail: `${res.thumbnail.path}.${res.thumbnail.extension}`,
+			price: res.prices[0].price ? `${res.prices[0].price} $` : "NOT AVAILABLE",
+		}
+	}
+
+	return { error, loaded, getAllCharacters, getCharacterData, getAllComics, clearError }
 }
 
 export default useMarvelService;
